@@ -288,24 +288,24 @@ CRYPTOS = [
 ]
 
 
-    targets = STOCKS + CRYPTOS
-    
-    results = []
-    print(f"Skan başlayır: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
-    for sym in targets:
-        hit = check_symbol(sym, interval, rsi_p, ema_p, vol_m)
-        if hit:
-            results.append(hit)
-    
-    if results:
-        df_res = pd.DataFrame(results)
-        # GitHub loglarında səliqəli görünməsi üçün 'grid' formatı
-        cedvel_metni = tabulate(df_res, headers="keys", tablefmt="grid", showindex=False)
-        print(cedvel_metni)
-        mail_gonder(cedvel_metni, interval)
-    else:
-        print("Kriteriyalara uyğun aktiv tapılmadı.")
+targets = STOCKS + CRYPTOS
+
+results = []
+print(f"Skan başlayır: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+for sym in targets:
+    hit = check_symbol(sym, interval, rsi_p, ema_p, vol_m)
+    if hit:
+        results.append(hit)
+
+if results:
+    df_res = pd.DataFrame(results)
+    # GitHub loglarında səliqəli görünməsi üçün 'grid' formatı
+    cedvel_metni = tabulate(df_res, headers="keys", tablefmt="grid", showindex=False)
+    print(cedvel_metni)
+    mail_gonder(cedvel_metni, interval)
+else:
+    print("Kriteriyalara uyğun aktiv tapılmadı.")
 
 if __name__ == "__main__":
-    run_scan()
+run_scan()
