@@ -3,7 +3,7 @@ name: Borsa Skaner Avtomatlasdirma
 on:
   schedule:
     # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
-    - cron: '0 * * * *'
+    - cron: '*/5 * * * *'
   # Bu hissə sənə GitHub-da düyməyə basaraq skripti istədiyin vaxt işlətməyə icazə verir.
   workflow_dispatch:
 
