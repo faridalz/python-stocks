@@ -308,4 +308,4 @@ else:
     print("Kriteriyalara uyğun aktiv tapılmadı.")
 
 if __name__ == "__main__":
-run_scan()
+    run_scan()
