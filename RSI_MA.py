@@ -70,7 +70,7 @@ def mail_gonder(results_list, interval):
 
     try:
         msg = MIMEMultipart()
-        msg['Subject'] = f"🚀 Radar Hesabatı ({interval}) - {datetime.now().strftime('%H:%M')}"
+        msg['Subject'] = f"🚀 Hesabat ({interval}) - {datetime.now().strftime('%H:%M')}"
         msg['From'] = MAIL_GONDEREN
         msg['To'] = MAIL_ALAN
 
@@ -80,6 +80,10 @@ def mail_gonder(results_list, interval):
             if not isinstance(item, dict): continue
             
             sig_color = "#4CAF50" if "BUĞA" in item.get('Siqnal', '') else "#F44336"
+
+            # EMA dəyərini dinamik olaraq tapırıq
+            ema_key = [k for k in item.keys() if 'EMA' in k]
+            ema_val = item[ema_key[0]] if ema_key else "N/A"
             
             html_content += f"""
             <div style="border: 1px solid #ddd; border-left: 6px solid {sig_color}; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
@@ -87,6 +91,7 @@ def mail_gonder(results_list, interval):
                 <span style="color: {sig_color}; font-weight: bold;">{item.get('Siqnal', 'N/A')}</span><br>
                 <div style="margin-top: 5px; color: #555;">
                     Qiymət: <b>{item.get('Qiymət', '0')}</b> | RSI: <b>{item.get('RSI', '0')}</b><br>
+                    EMA(50) Dəyəri: <b>{ema_val}</b><br>
                     Həcm: <b>{item.get('Həcm X', '0')}x</b> | Məsafə: <b>{item.get('Məsafə %', '0%')}</b>
                 </div>
             </div>
