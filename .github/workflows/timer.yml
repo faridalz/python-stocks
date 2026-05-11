@@ -28,4 +28,4 @@ jobs:
         env:
           # GitHub Secrets-də yaratdığın şifrəni bura bağlayırıq
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-        run: RSI_MA.py
+        run: python RSI_MA.py
