@@ -56,23 +56,67 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         print(f"Xəta {ticker}: {e}")
     return None
 
-def mail_gonder(content, interval):
-    if not content or not MAIL_SIFRESI: return
+def mail_gonder(results_list, interval):
+    if not results_list or not MAIL_SIFRESI: return
     try:
         msg = MIMEMultipart()
-        msg['Subject'] = f"Radar Hesabatı ({interval}) - {datetime.now().strftime('%H:%M')}"
+        msg['Subject'] = f"🚀 Radar Hesabatı ({interval}) - {datetime.now().strftime('%H:%M')}"
         msg['From'] = MAIL_GONDEREN
         msg['To'] = MAIL_ALAN
-        html = f"<html><body><pre>{content}</pre></body></html>"
-        msg.attach(MIMEText(html, 'html'))
+
+        # Mobil üçün uyğun HTML dizaynı
+        html_content = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 10px; }}
+                .card {{ background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 5px solid #2196F3; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+                .bull {{ border-left-color: #4CAF50; }}
+                .bear {{ border-left-color: #F44336; }}
+                .ticker {{ font-size: 18px; font-weight: bold; color: #333; }}
+                .signal {{ font-size: 14px; font-weight: bold; text-transform: uppercase; }}
+                .details {{ font-size: 14px; color: #666; line-height: 1.6; margin-top: 8px; }}
+                .footer {{ font-size: 11px; color: #999; text-align: center; margin-top: 20px; }}
+            </style>
+        </head>
+        <body>
+            <h2 style="text-align: center; color: #444;">Texniki Radar Nəticələri</h2>
+        """
+
+        for item in results_list:
+            # Siqnal tipinə görə rəng təyini
+            sig_class = "bull" if "BUĞA" in item['Siqnal'] else "bear"
+            sig_color = "#4CAF50" if "BUĞA" in item['Siqnal'] else "#F44336"
+
+            html_content += f"""
+            <div class="card {sig_class}">
+                <div class="ticker">{item['Tikker']}</div>
+                <div class="signal" style="color: {sig_color};">{item['Siqnal']}</div>
+                <div class="details">
+                    <b>Qiymət:</b> {item['Qiymət']} <br>
+                    <b>RSI:</b> {item['RSI']} | <b>EMA(50):</b> {item[list(item.keys())[4]]} <br>
+                    <b>Həcm:</b> {item['Həcm X']}x | <b>EMA-dan Məsafə:</b> {item['Məsafə %']}
+                </div>
+            </div>
+            """
+
+        html_content += f"""
+            <div class="footer">
+                Bu hesabat {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} tarixində GitHub Actions tərəfindən göndərilib.
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_content, 'html'))
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             server.login(MAIL_GONDEREN, MAIL_SIFRESI)
             server.send_message(msg)
-        print("Mail göndərildi.")
+        print("Mobil-friendly mail göndərildi.")
     except Exception as e:
         print(f"Mail xətası: {e}")
-
+        
 def run_scan():
     # Parametrlər funksiyanın daxilində təyin olunur
     target_interval = "4h"
