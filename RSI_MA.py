@@ -40,9 +40,9 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         vol_ratio = float(df["Volume"].iloc[-1] / vol_avg) if vol_avg > 0 else 0
 
         signal = None
-        if price > ema_val and rsi_val < 40 and vol_ratio >= vol_mult:
+        if  rsi_val < 35 and vol_ratio >= vol_mult: #price > ema_val and
             signal = "BUĞA (Long)"
-        elif price < ema_val and rsi_val > 70 and vol_ratio >= vol_mult:
+        elif rsi_val > 70 and vol_ratio >= vol_mult: # price < ema_val
             signal = "AYI (Short)"
 
         if signal:
