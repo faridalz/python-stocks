@@ -122,7 +122,7 @@ def run_scan():
     target_interval = "4h"
     target_ema = 50
     target_rsi = 14
-    target_vol = 0.0
+    target_vol = 1.5
     
     targets = [
         "AAPL","MSFT","NVDA","GOOGL","GOOG","AMZN","META","TSLA","AVGO","ORCL",
