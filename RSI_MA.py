@@ -42,7 +42,7 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         signal = None
         if  rsi_val < 35 and vol_ratio >= vol_mult: #price > ema_val and
             signal = "BUĞA (Long)"
-        elif rsi_val > 70 and vol_ratio >= vol_mult: # price < ema_val
+        elif rsi_val > 75 and vol_ratio >= vol_mult: # price < ema_val
             signal = "AYI (Short)"
 
         if signal:
