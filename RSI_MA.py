@@ -57,48 +57,37 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
     return None
 
 def mail_gonder(results_list, interval):
-    # Əgər results_list siyahı deyilsə (məsələn, boşdur və ya səhvən mətn göndərilibsə) dayandır
-    if not results_list or not isinstance(results_list, list) or not MAIL_SIFRESI:
-        print("Göndəriləcək uyğun siyahı tapılmadı və ya şifrə yoxdur.")
+    # Şifrəni və siyahını təkrar yoxlayaq
+    password = os.getenv("MAIL_PASSWORD")
+    
+    if not results_list:
+        print("Siyahı boşdur, mail göndərilmədi.")
         return
     
+    if not password:
+        print("XƏTA: MAIL_PASSWORD tapılmadı! GitHub Secrets-i yoxlayın.")
+        return
+
     try:
         msg = MIMEMultipart()
         msg['Subject'] = f"🚀 Radar Hesabatı ({interval}) - {datetime.now().strftime('%H:%M')}"
         msg['From'] = MAIL_GONDEREN
         msg['To'] = MAIL_ALAN
 
-        html_content = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: sans-serif; background-color: #f4f4f4; padding: 10px; }}
-                .card {{ background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 5px solid #2196F3; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
-                .bull {{ border-left-color: #4CAF50; }}
-                .bear {{ border-left-color: #F44336; }}
-                .ticker {{ font-size: 18px; font-weight: bold; color: #333; }}
-                .details {{ font-size: 14px; color: #666; margin-top: 8px; }}
-            </style>
-        </head>
-        <body>
-            <h2 style="text-align: center; color: #444;">Texniki Radar Nəticələri</h2>
-        """
+        html_content = "<html><body><h2 style='text-align:center;'>Texniki Radar</h2>"
 
         for item in results_list:
-            # Burada 'item'in lüğət olduğunu bir daha yoxlayırıq
-            if not isinstance(item, dict): continue 
+            if not isinstance(item, dict): continue
             
-            sig_class = "bull" if "BUĞA" in item.get('Siqnal', '') else "bear"
             sig_color = "#4CAF50" if "BUĞA" in item.get('Siqnal', '') else "#F44336"
-
+            
             html_content += f"""
-            <div class="card {sig_class}">
-                <div class="ticker">{item.get('Tikker', 'N/A')}</div>
-                <div class="signal" style="color: {sig_color}; font-weight:bold;">{item.get('Siqnal', 'N/A')}</div>
-                <div class="details">
-                    <b>Qiymət:</b> {item.get('Qiymət', '0')} <br>
-                    <b>RSI:</b> {item.get('RSI', '0')} | <b>Həcm:</b> {item.get('Həcm X', '0')}x <br>
-                    <b>Məsafə:</b> {item.get('Məsafə %', '0%')}
+            <div style="border: 1px solid #ddd; border-left: 6px solid {sig_color}; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                <b style="font-size: 18px;">{item.get('Tikker', 'N/A')}</b> - 
+                <span style="color: {sig_color}; font-weight: bold;">{item.get('Siqnal', 'N/A')}</span><br>
+                <div style="margin-top: 5px; color: #555;">
+                    Qiymət: <b>{item.get('Qiymət', '0')}</b> | RSI: <b>{item.get('RSI', '0')}</b><br>
+                    Həcm: <b>{item.get('Həcm X', '0')}x</b> | Məsafə: <b>{item.get('Məsafə %', '0%')}</b>
                 </div>
             </div>
             """
@@ -106,13 +95,15 @@ def mail_gonder(results_list, interval):
         html_content += "</body></html>"
         
         msg.attach(MIMEText(html_content, 'html'))
+        
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
-            server.login(MAIL_GONDEREN, MAIL_SIFRESI)
+            server.login(MAIL_GONDEREN, password)
             server.send_message(msg)
-        print("Mobil-friendly mail göndərildi.")
+        print("Mobil-friendly mail uğurla göndərildi.")
+        
     except Exception as e:
-        print(f"Mail xətası: {e}")
+        print(f"Mail göndərilərkən xəta baş verdi: {e}")
         
 def run_scan():
     # Parametrlər funksiyanın daxilində təyin olunur
@@ -311,10 +302,12 @@ def run_scan():
             results.append(hit)
     
     if results:
-        df_res = pd.DataFrame(results)
-        cedvel = tabulate(df_res, headers="keys", tablefmt="grid", showindex=False)
-        print(cedvel)
         mail_gonder(cedvel, target_interval)
+        cedvel = tabulate(pd.DataFrame(results), headers="keys", tablefmt="grid", showindex=False)
+        print(cedvel) 
+        
+        # MAIL ÜÇÜN: Siyahının özünü göndəririk (cedvel-i yox!)
+        mail_gonder(results, target_interval)
     else:
         print("Uyğun aktiv tapılmadı.")
 
