@@ -13,8 +13,6 @@ MAIL_GONDEREN = "farid.alizade141@gmail.com"  # Öz mailini bura yaz
 MAIL_ALAN = "farid.alizade141@gmail.com" # Hesabatı hara istəyirsənsə bura yaz
 MAIL_SIFRESI = os.getenv("MAIL_PASSWORD") 
 
-# --- Texniki Hesablamalar ---
-
 def calc_rsi(series, period=14):
     delta = series.diff()
     gain = delta.clip(lower=0)
@@ -27,19 +25,12 @@ def calc_rsi(series, period=14):
 def calc_ema(series, period):
     return series.ewm(span=period, adjust=False, min_periods=period).mean()
 
-# --- Skaner Funksiyası ---
-
 def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
     try:
-        # GitHub serverləri üçün data periodunu avtomatik tənzimləyirik
-        period_map = {"1h":"1y", "4h":"2y", "1d":"3y"}
-        data_period = period_map.get(interval, "2y")
-        
-        df = yf.download(ticker, interval=interval, period=data_period, progress=False, auto_adjust=True)
-        if df is None or df.empty: return None
+        # GitHub serverləri üçün data periodunu tənzimləyirik
+        df = yf.download(ticker, interval=interval, period="2y", progress=False, auto_adjust=True)
+        if df is None or df.empty or len(df) < max(ema_period, rsi_period, 20): return None
         if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.get_level_values(0)
-        
-        if len(df) < max(ema_period, rsi_period, 20): return None
 
         price = float(df["Close"].iloc[-1])
         rsi_val = float(calc_rsi(df["Close"], rsi_period).iloc[-1])
@@ -57,57 +48,40 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         if signal:
             dist_pc = ((price - ema_val) / ema_val) * 100
             return {
-                "Tikker": ticker,
-                "Siqnal": signal,
-                "Qiymət": round(price, 2),
-                "RSI": round(rsi_val, 2),
-                f"EMA({ema_period})": round(ema_val, 2),
-                "Həcm X": round(vol_ratio, 2),
-                "Məsafə %": f"{round(dist_pc, 2)}%"
+                "Tikker": ticker, "Siqnal": signal, "Qiymət": round(price, 2),
+                "RSI": round(rsi_val, 2), f"EMA({ema_period})": round(ema_val, 2),
+                "Həcm X": round(vol_ratio, 2), "Məsafə %": f"{round(dist_pc, 2)}%"
             }
     except Exception as e:
         print(f"Xəta {ticker}: {e}")
     return None
 
 def mail_gonder(content, interval):
-    if not content: return
+    if not content or not MAIL_SIFRESI: return
     try:
         msg = MIMEMultipart()
-        msg['Subject'] = f"Radar Hesabatı ({interval}) - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        msg['Subject'] = f"Radar Hesabatı ({interval}) - {datetime.now().strftime('%H:%M')}"
         msg['From'] = MAIL_GONDEREN
         msg['To'] = MAIL_ALAN
-        
-        html = f"""
-        <html>
-        <body>
-            <h2 style="color: #2e7d32;">Texniki Radar Nəticələri</h2>
-            <p><b>Zaman İntervalı:</b> {interval}</p>
-            <hr>
-            <pre style="font-family: monospace;">{content}</pre>
-            <hr>
-            <p style="font-size: 12px; color: gray;">Bu hesabat GitHub Actions tərəfindən avtomatik göndərilib.</p>
-        </body>
-        </html>
-        """
+        html = f"<html><body><pre>{content}</pre></body></html>"
         msg.attach(MIMEText(html, 'html'))
-        
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             server.login(MAIL_GONDEREN, MAIL_SIFRESI)
             server.send_message(msg)
-        print("Mail müvəffəqiyyətlə göndərildi.")
+        print("Mail göndərildi.")
     except Exception as e:
-        print(f"Mail göndərilərkən xəta: {e}")
+        print(f"Mail xətası: {e}")
 
 def run_scan():
-    # Parametrlər (Bunları buradan dəyişə bilərsən)
-    interval = "4h"
-    ema_p = 50
-    rsi_p = 14
-    vol_m = 0.0 # Həcm filtri (0.0 = Deaktiv)
+    # Parametrlər funksiyanın daxilində təyin olunur
+    target_interval = "4h"
+    target_ema = 50
+    target_rsi = 14
+    target_vol = 0.0
     
-STOCKS = [
-    "AAPL","MSFT","NVDA","GOOGL","GOOG","AMZN","META","TSLA","AVGO","ORCL",
+    targets = [
+        "AAPL","MSFT","NVDA","GOOGL","GOOG","AMZN","META","TSLA","AVGO","ORCL",
     "CRM","ADBE","AMD","QCOM","TXN","INTC","AMAT","LRCX","KLAC","SNPS",
     "CDNS","MU","MCHP","NXPI","FTNT","PANW","CRWD","NOW","SNOW","PLTR",
     "INTU","ANET","CTSH","AKAM","EPAM","NET","DDOG","ZS","WDAY","APP",
@@ -182,10 +156,8 @@ STOCKS = [
     # --- FRANSA və NİDERLAND ---
     "MC.PA","OR.PA","RMS.PA","KER.PA","AIR.PA","TTE.PA","SAN.PA","BNP.PA",
     "ASML.AS","ADYEN.AS","INGA.AS","PRX.AS"
-]
 
-CRYPTOS = [
- # --- Tier 1: Mega liquidity ---
+     # --- Tier 1: Mega liquidity ---
     "BTC-USD",    # Bitcoin
     "ETH-USD",    # Ethereum
     "BNB-USD",    # BNB
@@ -284,28 +256,26 @@ CRYPTOS = [
     "DASH-USD",   # Dash
     "XTZ-USD",    # Tezos
     "ICX-USD",    # ICON
-    "ONT-USD",    # Ontology
-]
+    "ONT-USD",    # Ontology    
 
-
-targets = STOCKS + CRYPTOS
-
-results = []
-print(f"Skan başlayır: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-for sym in targets:
-    hit = check_symbol(sym, interval, rsi_p, ema_p, vol_m)
-    if hit:
-        results.append(hit)
-
-if results:
-    df_res = pd.DataFrame(results)
-    # GitHub loglarında səliqəli görünməsi üçün 'grid' formatı
-    cedvel_metni = tabulate(df_res, headers="keys", tablefmt="grid", showindex=False)
-    print(cedvel_metni)
-    mail_gonder(cedvel_metni, interval)
-else:
-    print("Kriteriyalara uyğun aktiv tapılmadı.")
+    ]
+    
+    results = []
+    print(f"Skan başlayır: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    for sym in targets:
+        # Dəyişənləri burada funksiyaya düzgün ötürürük
+        hit = check_symbol(sym, target_interval, target_rsi, target_ema, target_vol)
+        if hit:
+            results.append(hit)
+    
+    if results:
+        df_res = pd.DataFrame(results)
+        cedvel = tabulate(df_res, headers="keys", tablefmt="grid", showindex=False)
+        print(cedvel)
+        mail_gonder(cedvel, target_interval)
+    else:
+        print("Uyğun aktiv tapılmadı.")
 
 if __name__ == "__main__":
     run_scan()
