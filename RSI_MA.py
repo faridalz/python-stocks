@@ -302,7 +302,6 @@ def run_scan():
             results.append(hit)
     
     if results:
-        mail_gonder(cedvel, target_interval)
         cedvel = tabulate(pd.DataFrame(results), headers="keys", tablefmt="grid", showindex=False)
         print(cedvel) 
         
