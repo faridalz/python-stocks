@@ -1,0 +1,31 @@
+name: Skaner 1H
+
+on:
+  schedule:
+    # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
+    - cron: '0 * * * *'
+  # Bu hissə sənə GitHub-da düyməyə basaraq skripti istədiyin vaxt işlətməyə icazə verir.
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu kopyala
+        uses: actions/checkout@v3
+
+      - name: Python-u quraşdır
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Lazımi kitabxanaları yüklə
+        run: |
+          pip install yfinance pandas tabulate
+
+      - name: Skripti işə sal
+        env:
+          # GitHub Secrets-də yaratdığın şifrəni bura bağlayırıq
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+        run: python RSI_MA_1H.py
