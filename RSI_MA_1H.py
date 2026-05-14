@@ -91,7 +91,7 @@ def mail_gonder(results_list, interval):
                 <span style="color: {sig_color}; font-weight: bold;">{item.get('Siqnal', 'N/A')}</span><br>
                 <div style="margin-top: 5px; color: #555;">
                     Qiymət: <b>{item.get('Qiymət', '0')}</b> | RSI: <b>{item.get('RSI', '0')}</b><br>
-                    EMA(50) Dəyəri: <b>{ema_val}</b><br>
+                    EMA(20) Dəyəri: <b>{ema_val}</b><br>
                     Həcm: <b>{item.get('Həcm X', '0')}x</b> | Məsafə: <b>{item.get('Məsafə %', '0%')}</b>
                 </div>
             </div>
