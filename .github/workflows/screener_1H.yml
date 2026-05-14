@@ -1,0 +1,49 @@
+name: Confluence Screener — Saatlıq
+
+on:
+  schedule:
+    # Hər saat başı işə düşür (UTC ilə)
+    # Bazar ertəsi–Cümə, saat 13:00–21:00 UTC = New York 09:00–17:00
+    - cron: "0 08-23 * * *"
+  # Əl ilə də işə salmaq üçün
+  workflow_dispatch:
+
+jobs:
+  screener:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # 1. Kodu al
+      - name: 📥 Kodu yüklə
+        uses: actions/checkout@v4
+
+      # 2. Python qur
+      - name: 🐍 Python 3.11 qur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # 3. Asılılıqları yüklə
+      - name: 📦 Kitabxanaları yüklə
+        run: |
+          pip install --upgrade pip
+          pip install yfinance pandas numpy tqdm
+
+      # 4. Screener-i işə sal
+      - name: 🔍 Screener-i işə sal
+        env:
+          EMAIL_SENDER:   ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+        run: python screener_1H.py
+
+      # 5. CSV nəticəsini artifact kimi saxla
+      - name: 💾 Nəticəni saxla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: siqnallar-${{ github.run_id }}
+          path: confluence_siqnallar_*.csv
+          retention-days: 1
