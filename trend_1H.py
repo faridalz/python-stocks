@@ -70,7 +70,7 @@ def mail_gonder(results_list, interval):
 
     try:
         msg = MIMEMultipart()
-        msg['Subject'] = f"🚀 Hesabat ({interval}) - {datetime.now().strftime('%H:%M')}"
+        msg['Subject'] = f"🚀 Trend Hesabat ({interval}) - {datetime.now().strftime('%H:%M')}"
         msg['From'] = MAIL_GONDEREN
         msg['To'] = MAIL_ALAN
 
