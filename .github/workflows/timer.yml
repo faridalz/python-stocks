@@ -1,5 +1,4 @@
-name: Borsa Skaner Avtomatlasdirma
-
+name: Scan 4H
 on:
   schedule:
     # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
