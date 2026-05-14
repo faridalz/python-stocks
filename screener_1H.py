@@ -492,7 +492,7 @@ def build_html(buy_df: pd.DataFrame, sell_df: pd.DataFrame, now: str,
 def send_email(html: str, now: str, buy_count: int, sell_count: int):
     """Gmail SMTP vasitəsilə HTML email göndərir."""
     sender   = os.getenv("EMAIL_SENDER")
-    password = os.getenv("MAIL_PASSWORD")
+    password = os.getenv("EMAIL_PASSWORD")
     receiver = os.getenv("EMAIL_RECEIVER")
 
     if not all([sender, password, receiver]):
