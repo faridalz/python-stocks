@@ -89,12 +89,12 @@ ATR_SL        = 1.0     # SL  = giriş - ATR × 1.0
 # ─────────────────────────────────────────────────────────────
 
 # ── Ağırlıqlar (cəmi 10 xal) ─────────────────────────────────
-W_ADX      = 1.5   # Trend gücü (keçid şərti)
+W_ADX      = 0.5   # Trend gücü (keçid şərti)
 W_EMA      = 1.5   # Trend istiqaməti
-W_RSI      = 1.25   # Sadə RSI (overbought/oversold filtri)
-W_SRSI     = 1.5   # StochRSI momentum keyfiyyəti
+W_RSI      = 1.5   # Sadə RSI (overbought/oversold filtri)
+W_SRSI     = 2   # StochRSI momentum keyfiyyəti
 W_MACD     = 1.5   # Momentum istiqaməti
-W_VOL      = 1.25   # Həcm onayı
+W_VOL      = 1.5   # Həcm onayı
 W_SQUEEZE  = 1.25   # Squeeze çıxışı
 W_MTF      = 0.25   # 4h trend uyğunluğu
 # Cəm: 10.0
