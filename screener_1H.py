@@ -379,6 +379,9 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     elif ml > ms and mh > mh_p:
         buy_score += W_MACD * 0.5
         buy_reasons.append("MACD↑ hist dönür")
+    elif ml < ms and mh < 0 and mh > mh_p:
+        buy_score += W_MACD * 0.5
+        buy_reasons.append("MACD↑ turning")  
     # "Xətt üstdə amma histogram azalır" → xal verilmir
 
     # 5. Həcm (1.0 xal)
