@@ -345,26 +345,29 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     # RSI < 40: oversold, dönüş mümkün amma təsdiq lazım
     # RSI 40-60 arası VƏ yüksəlir: ən keyfiyyətli alış zonası
     # RSI > 70: overbought — alış siqnalına mənfi təsir
-    if 40 <= rsi_val <= 60 and rsi_val > rsi_prev:
+    if 40 <= rsi_val <= 69 and rsi_val > rsi_prev:
         buy_score += W_RSI
         buy_reasons.append(f"RSI↑ {rsi_val:.0f}")
     elif 30 <= rsi_val < 40 and rsi_val > rsi_prev:
         buy_score += W_RSI * 0.75
         buy_reasons.append(f"RSI↑ oversold çıxış {rsi_val:.0f}")
     elif rsi_val >= 70:
-        buy_score -= W_RSI * 0.5
+        buy_score -= W_RSI * 0
         buy_reasons.append(f"RSI overbought {rsi_val:.0f}⚠️")
+    elif rsi_val < 30:
+        buy_score -= W_RSI * 1
+        buy_reasons.append(f"RSI impossible but WHY NOT {rsi_val:.0f}⚠️")  
 
     # 4. StochRSI (1.5 xal)
     # Alış üçün: K <50 zonasından yuxarı kəsim etməlidir.
     # K>=50 artıq overbought ərazisinə yaxındır — alış siqnalı sayılmır.
-    if k_val < 50 and k_val > d_val and k_prev <= d_prev:
+    if k_val < 60 and k_val > d_val and k_prev <= d_prev:
         buy_score += W_SRSI
         buy_reasons.append(f"StochRSI↑ kəsim K={k_val:.0f}")
-    elif k_val < 40 and k_val > d_val:
+    elif k_val < 35 and k_val > d_val:
         buy_score += W_SRSI * 0.5
         buy_reasons.append(f"StochRSI↑ K={k_val:.0f}")
-    # K>=50 → alış xalı verilmir (overbought zonası)
+    # K>=60 → alış xalı verilmir (overbought zonası)
 
     # 4. MACD (1.5 xal)
     # Yalnız histogram ARTIRsa tam xal — "xətt üstdə amma düz" siqnal deyil
@@ -417,12 +420,12 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     # RSI >= 70 VƏ düşür: ən keyfiyyətli satış zonası
     # RSI < 30: oversold — satış siqnalına mənfi təsir
     if 60 >= rsi_val >= 40 and rsi_val < rsi_prev:
-        sell_score += W_RSI
+        sell_score += W_RSI * 0.75
         sell_reasons.append(f"RSI↓ {rsi_val:.0f}")
     elif rsi_val > 60 and rsi_val < rsi_prev:
-        sell_score += W_RSI * 0.75
-        sell_reasons.append(f"RSI↓ overbought çıxış {rsi_val:.0f}")
-    elif rsi_val <= 30:
+        sell_score += W_RSI
+        sell_reasons.append(f"RSI↓ overbought {rsi_val:.0f}")
+    elif rsi_val < 40:
         sell_score -= W_RSI * 0.5
         sell_reasons.append(f"RSI oversold {rsi_val:.0f}⚠️")
 
@@ -433,7 +436,7 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         sell_score += W_SRSI
         sell_reasons.append(f"StochRSI↓ kəsim K={k_val:.0f}")
     elif k_val > 60 and k_val < d_val:
-        sell_score += W_SRSI * 0.5
+        sell_score += W_SRSI * 0.75
         sell_reasons.append(f"StochRSI↓ K={k_val:.0f}")
     # K<=50 → satış xalı verilmir (oversold zonası)
 
