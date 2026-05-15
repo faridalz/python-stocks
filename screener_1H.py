@@ -54,6 +54,9 @@ MIN_SCORE      = 5.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, dah
 # EMA
 EMA_FAST, EMA_MID, EMA_SLOW = 9, 21, 50
 
+# RSI
+RSI_PERIOD    = 14   # Sadə RSI periyodu (skora daxil edilir)
+
 # ADX  (1 saatlıq üçün ≥20 optimal — trendli bazarı süzür)
 ADX_PERIOD    = 14
 ADX_MIN       = 20      # Altında siqnal verilmir — yan trend çox false positive yaradır
@@ -87,8 +90,9 @@ ATR_SL        = 1.0     # SL  = giriş - ATR × 1.0
 
 # ── Ağırlıqlar (cəmi 10 xal) ─────────────────────────────────
 W_ADX      = 1.5   # Trend gücü (keçid şərti)
-W_EMA      = 2.0   # Trend istiqaməti
-W_SRSI     = 2.0   # Momentum keyfiyyəti
+W_EMA      = 1.5   # Trend istiqaməti
+W_RSI      = 1.0   # Sadə RSI (overbought/oversold filtri)
+W_SRSI     = 1.5   # StochRSI momentum keyfiyyəti
 W_MACD     = 1.5   # Momentum istiqaməti
 W_VOL      = 1.0   # Həcm onayı
 W_SQUEEZE  = 1.0   # Squeeze çıxışı
@@ -181,6 +185,13 @@ def calc_adx(high: pd.Series, low: pd.Series, close: pd.Series, p: int):
     dx  = (100 * (plus_di - minus_di).abs() / (plus_di + minus_di).replace(0, np.nan))
     adx = dx.ewm(com=p - 1, adjust=False).mean()
     return adx, plus_di, minus_di
+
+def calc_rsi(close: pd.Series, period: int = 14) -> pd.Series:
+    """Sadə RSI — skora daxil edilir və email-də göstərilir."""
+    delta    = close.diff()
+    gain     = delta.clip(lower=0).ewm(com=period - 1, adjust=False).mean()
+    loss     = (-delta.clip(upper=0)).ewm(com=period - 1, adjust=False).mean()
+    return 100 - 100 / (1 + gain / loss.replace(0, np.nan))
 
 def calc_stoch_rsi(close: pd.Series, rsi_p: int, stoch_p: int, k: int, d: int):
     """StochRSI %K və %D qaytarır."""
@@ -278,6 +289,7 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     atr = calc_atr(high, low, close, ATR_PERIOD)
     vol_ma = volume.rolling(VOL_PERIOD).mean()
     _, squeeze_release = calc_squeeze(high, low, close)
+    rsi_series = calc_rsi(close, RSI_PERIOD)
 
     # Son dəyərlər
     price   = float(close.iloc[-1])
@@ -299,8 +311,10 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     vol_now = float(volume.iloc[-1])
     vol_avg = float(vol_ma.iloc[-1])
     sq_rel  = bool(squeeze_release.iloc[-1])
+    rsi_val = float(rsi_series.iloc[-1])
+    rsi_prev= float(rsi_series.iloc[-2])
 
-    if any(np.isnan(v) for v in [adx_val, e9, e21, e50, k_val, d_val, ml, atr_val, vol_avg]):
+    if any(np.isnan(v) for v in [adx_val, e9, e21, e50, k_val, d_val, ml, atr_val, vol_avg, rsi_val]):
         return None
 
     # ── KEÇID ŞƏRTİ: ADX filtri ──────────────────────────────
@@ -326,22 +340,41 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         buy_score += W_EMA * 0.5
         buy_reasons.append("EMA qismən↑")
 
-    # 3. StochRSI (2.0 xal)
-    # %K aşağı zonadayken %D-ni kəsir → güclü dönüş siqnalı
-    if k_val < 80 and k_val > d_val and k_prev <= d_prev:
+    # 3. Sadə RSI (1.0 xal)
+    # Alış üçün ideal zona: 40–60 (nə oversold nə overbought — momentum gəlir)
+    # RSI < 40: oversold, dönüş mümkün amma təsdiq lazım
+    # RSI 40-60 arası VƏ yüksəlir: ən keyfiyyətli alış zonası
+    # RSI > 70: overbought — alış siqnalına mənfi təsir
+    if 40 <= rsi_val <= 60 and rsi_val > rsi_prev:
+        buy_score += W_RSI
+        buy_reasons.append(f"RSI↑ {rsi_val:.0f}")
+    elif 30 <= rsi_val < 40 and rsi_val > rsi_prev:
+        buy_score += W_RSI * 0.75
+        buy_reasons.append(f"RSI↑ oversold çıxış {rsi_val:.0f}")
+    elif rsi_val >= 70:
+        buy_score -= W_RSI * 0.5
+        buy_reasons.append(f"RSI overbought {rsi_val:.0f}⚠️")
+
+    # 4. StochRSI (1.5 xal)
+    # Alış üçün: K <50 zonasından yuxarı kəsim etməlidir.
+    # K>=50 artıq overbought ərazisinə yaxındır — alış siqnalı sayılmır.
+    if k_val < 50 and k_val > d_val and k_prev <= d_prev:
         buy_score += W_SRSI
         buy_reasons.append(f"StochRSI↑ kəsim K={k_val:.0f}")
-    elif k_val < 50 and k_val > d_val:
+    elif k_val < 40 and k_val > d_val:
         buy_score += W_SRSI * 0.5
         buy_reasons.append(f"StochRSI↑ K={k_val:.0f}")
+    # K>=50 → alış xalı verilmir (overbought zonası)
 
     # 4. MACD (1.5 xal)
-    if ml > ms and mh > mh_p:
+    # Yalnız histogram ARTIRsa tam xal — "xətt üstdə amma düz" siqnal deyil
+    if ml > ms and mh > mh_p and mh > 0:
         buy_score += W_MACD
         buy_reasons.append("MACD↑ hist artır")
-    elif ml > ms:
+    elif ml > ms and mh > mh_p:
         buy_score += W_MACD * 0.5
-        buy_reasons.append("MACD xətt üstdə")
+        buy_reasons.append("MACD↑ hist dönür")
+    # "Xətt üstdə amma histogram azalır" → xal verilmir
 
     # 5. Həcm (1.0 xal)
     if vol_avg > 0 and vol_now >= vol_avg * VOL_MULT:
@@ -378,21 +411,41 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         sell_score += W_EMA * 0.5
         sell_reasons.append("EMA qismən↓")
 
-    # 3. StochRSI
-    if k_val > 20 and k_val < d_val and k_prev >= d_prev:
+    # 3. Sadə RSI (1.0 xal)
+    # Satış üçün ideal zona: 40–60 arası aşağı dönüş
+    # RSI > 60: momentum zəifləyir, satış zonası
+    # RSI >= 70 VƏ düşür: ən keyfiyyətli satış zonası
+    # RSI < 30: oversold — satış siqnalına mənfi təsir
+    if 60 >= rsi_val >= 40 and rsi_val < rsi_prev:
+        sell_score += W_RSI
+        sell_reasons.append(f"RSI↓ {rsi_val:.0f}")
+    elif rsi_val > 60 and rsi_val < rsi_prev:
+        sell_score += W_RSI * 0.75
+        sell_reasons.append(f"RSI↓ overbought çıxış {rsi_val:.0f}")
+    elif rsi_val <= 30:
+        sell_score -= W_RSI * 0.5
+        sell_reasons.append(f"RSI oversold {rsi_val:.0f}⚠️")
+
+    # 4. StochRSI
+    # Satış üçün: K >50 zonasından aşağı kəsim etməlidir.
+    # K<=50 artıq oversold ərazisinə yaxındır — satış siqnalı sayılmır.
+    if k_val > 50 and k_val < d_val and k_prev >= d_prev:
         sell_score += W_SRSI
         sell_reasons.append(f"StochRSI↓ kəsim K={k_val:.0f}")
-    elif k_val > 50 and k_val < d_val:
+    elif k_val > 60 and k_val < d_val:
         sell_score += W_SRSI * 0.5
         sell_reasons.append(f"StochRSI↓ K={k_val:.0f}")
+    # K<=50 → satış xalı verilmir (oversold zonası)
 
     # 4. MACD
-    if ml < ms and mh < mh_p:
+    # Yalnız histogram AZALIRsa tam xal
+    if ml < ms and mh < mh_p and mh < 0:
         sell_score += W_MACD
         sell_reasons.append("MACD↓ hist azalır")
-    elif ml < ms:
+    elif ml < ms and mh < mh_p:
         sell_score += W_MACD * 0.5
-        sell_reasons.append("MACD xətt altında")
+        sell_reasons.append("MACD↓ hist dönür")
+    # "Xətt altında amma histogram artır" → xal verilmir
 
     # 5. Həcm
     if vol_avg > 0 and vol_now >= vol_avg * VOL_MULT:
@@ -458,6 +511,7 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         "tp2"     : tp2,
         "sl"      : sl,
         "adx"     : round(adx_val, 1),
+        "rsi"     : round(rsi_val, 1),
         "k"       : round(k_val,   1),
         "d"       : round(d_val,   1),
         "squeeze" : sq_rel,
@@ -492,7 +546,7 @@ def build_html(buy_df, sell_df, now, elapsed, total_scanned):
 
     def signal_rows(sub, color):
         if sub.empty:
-            return '<tr><td colspan="9" style="text-align:center;color:#888;padding:16px;">Siqnal tapılmadı</td></tr>'
+            return '<tr><td colspan="10" style="text-align:center;color:#888;padding:16px;">Siqnal tapılmadı</td></tr>'
         rows = ""
         for _, r in sub.iterrows():
             bg      = "#f0fff4" if color == "green" else "#fff5f5"
@@ -507,6 +561,7 @@ def build_html(buy_df, sell_df, now, elapsed, total_scanned):
               <td style="padding:9px 7px;font-size:12px;color:#16a34a;">${r['tp1']:,.4f}<br><span style="color:#059669">${r['tp2']:,.4f}</span></td>
               <td style="padding:9px 7px;font-size:12px;color:#dc2626;">${r['sl']:,.4f}</td>
               <td style="padding:9px 7px;font-size:12px;">{r['adx']:.0f}</td>
+              <td style="padding:9px 7px;font-size:12px;font-weight:600;color:{'#dc2626' if r.get('rsi',50)>=70 else ('#16a34a' if r.get('rsi',50)<=30 else '#374151')};">{r.get('rsi',0):.0f}</td>
               <td style="padding:9px 7px;font-size:12px;">{mtf_icon}</td>
               <td style="padding:9px 7px;font-weight:700;color:{clr};">{r['skor']:.1f}</td>
               <td style="padding:9px 7px;font-size:11px;color:#444;">{r['nedenler']}</td>
@@ -533,6 +588,7 @@ def build_html(buy_df, sell_df, now, elapsed, total_scanned):
                   <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">TP1/TP2</th>
                   <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">STOP</th>
                   <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">ADX</th>
+                  <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">RSI</th>
                   <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">4H</th>
                   <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">SKOR</th>
                   <th style="padding:9px 7px;text-align:left;font-size:11px;color:#666;">SƏBƏBLƏR</th>
@@ -675,19 +731,19 @@ def run():
         print(f"\n{'━'*72}")
         print(f"  {label}  —  {len(sub)} simvol")
         print(f"{'━'*72}")
-        print(f"{'#':<4} {'Növ':<7} {'Simvol':<10} {'Qiymət':>10} {'TP1':>10} {'SL':>10} {'ADX':>5} {'Skor':>6}  Güc")
+        print(f"{'#':<4} {'Növ':<7} {'Simvol':<10} {'Qiymət':>10} {'TP1':>10} {'SL':>10} {'ADX':>5} {'RSI':>5} {'Skor':>6}  Güc")
         print("─" * 72)
         for i, row in sub.iterrows():
             sq = " SQ" if row.get("squeeze") else ""
             print(f"{i:<4} {row['tip']:<7} {row['sembol']:<10} "
                   f"{row['fiyat']:>10.4f} {row['tp1']:>10.4f} {row['sl']:>10.4f} "
-                  f"{row['adx']:>5.0f} {row['skor']:>6.2f}  {row['guc']}{sq}")
+                  f"{row['adx']:>5.0f} {row.get('rsi',0):>5.0f} {row['skor']:>6.2f}  {row['guc']}{sq}")
         print("─" * 72)
 
     ts = datetime.now().strftime("%Y%m%d_%H%M")
     csv = f"confluence_v2_{ts}.csv"
     df[["tip","sembol","sinyal","skor","guc","fiyat","tp1","tp2","sl",
-        "adx","k","d","squeeze","trend4h","nedenler"]]\
+        "adx","rsi","k","d","squeeze","trend4h","nedenler"]]\
         .to_csv(csv, index=False, encoding="utf-8-sig")
     print(f"\n💾 Saxlandı: {csv}")
 
