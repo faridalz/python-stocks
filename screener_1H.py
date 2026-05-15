@@ -89,8 +89,8 @@ ATR_SL        = 1.0     # SL  = giriş - ATR × 1.0
 # ─────────────────────────────────────────────────────────────
 
 # ── Ağırlıqlar (cəmi 10 xal) ─────────────────────────────────
-W_ADX      = 0.0   # Trend gücü (keçid şərti)
-W_EMA      = 2.0   # Trend istiqaməti
+W_ADX      = 0.5   # Trend gücü (keçid şərti)
+W_EMA      = 1.5   # Trend istiqaməti
 W_RSI      = 1.5   # Sadə RSI (overbought/oversold filtri)
 W_SRSI     = 2.0   # StochRSI momentum keyfiyyəti
 W_MACD     = 1.5   # Momentum istiqaməti
@@ -331,6 +331,8 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     if pdi > mdi:
         buy_score += W_ADX
         buy_reasons.append(f"ADX↑ {adx_val:.0f} (+DI>{mdi:.0f})")
+    elif pdi < mdi:
+      buy_reasons.append(f"ADX↓ {adx_val:.0f} (+DI<{mdi:.0f})")
 
     # 2. EMA düzülüşü (2.0 xal)
     if e9 > e21 > e50:
@@ -345,10 +347,10 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     # RSI < 40: oversold, dönüş mümkün amma təsdiq lazım
     # RSI 40-60 arası VƏ yüksəlir: ən keyfiyyətli alış zonası
     # RSI > 70: overbought — alış siqnalına mənfi təsir
-    if 40 <= rsi_val <= 69 and rsi_val > rsi_prev:
+    if 40 <= rsi_val <= 69: #and rsi_val > rsi_prev
         buy_score += W_RSI
         buy_reasons.append(f"RSI↑ {rsi_val:.0f}")
-    elif 30 <= rsi_val < 40 and rsi_val > rsi_prev:
+    elif 30 <= rsi_val < 40: #and rsi_val > rsi_prev
         buy_score += W_RSI * 0.75
         buy_reasons.append(f"RSI↑ oversold çıxış {rsi_val:.0f}")
     elif rsi_val >= 70:
@@ -405,6 +407,8 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     if mdi > pdi:
         sell_score += W_ADX
         sell_reasons.append(f"ADX↓ {adx_val:.0f} (-DI>{pdi:.0f})")
+    elif mdi < pdi:
+        sell_reasons.append(f"ADX↑ {adx_val:.0f} (-DI<{pdi:.0f})")  
 
     # 2. EMA
     if e9 < e21 < e50:
@@ -419,10 +423,10 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     # RSI > 60: momentum zəifləyir, satış zonası
     # RSI >= 70 VƏ düşür: ən keyfiyyətli satış zonası
     # RSI < 30: oversold — satış siqnalına mənfi təsir
-    if 60 >= rsi_val >= 40 and rsi_val < rsi_prev:
+    if 60 >= rsi_val >= 40: #and rsi_val < rsi_prev:
         sell_score += W_RSI * 0.75
         sell_reasons.append(f"RSI↓ {rsi_val:.0f}")
-    elif rsi_val > 60 and rsi_val < rsi_prev:
+    elif rsi_val > 60: #and rsi_val < rsi_prev:
         sell_score += W_RSI
         sell_reasons.append(f"RSI↓ overbought {rsi_val:.0f}")
     elif rsi_val < 40:
