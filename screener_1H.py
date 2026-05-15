@@ -333,12 +333,15 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         buy_reasons.append(f"ADX↑ {adx_val:.0f} (+DI>{mdi:.0f})")
 
     # 2. EMA düzülüşü (2.0 xal)
-    if e9 > e21 > e50:
+    if e9 < e21 < e50 and price < e50:
         buy_score += W_EMA
         buy_reasons.append("EMA9>21>50↑")
-    elif e9 > e21 and price > e50:
+    elif e9 > e21 and e21 < e50 and price < e50:
         buy_score += W_EMA * 0.5
         buy_reasons.append("EMA qismən↑")
+    elif e9 > e21 > e50 and price > e50:
+        buy_score += W_EMA * 0.25
+        buy_reasons.append("EMA eh↑")
 
     # 3. Sadə RSI (1.0 xal)
     # Alış üçün ideal zona: 40–60 (nə oversold nə overbought — momentum gəlir)
@@ -404,10 +407,10 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         sell_reasons.append(f"ADX↓ {adx_val:.0f} (-DI>{pdi:.0f})")
 
     # 2. EMA
-    if e9 < e21 < e50:
+    if e9 > e21 > e50 and price > e50:
         sell_score += W_EMA
-        sell_reasons.append("EMA9<21<50↓")
-    elif e9 < e21 and price < e50:
+        sell_reasons.append("EMA9>21>50↓")
+    elif e9 < e21 and e21 > e50 and price > e50:
         sell_score += W_EMA * 0.5
         sell_reasons.append("EMA qismən↓")
 
