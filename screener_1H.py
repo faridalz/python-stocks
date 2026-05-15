@@ -49,7 +49,7 @@ from email.mime.text import MIMEText
 
 # ─── PARAMETRLƏR ─────────────────────────────────────────────
 WORKERS        = 20
-MIN_SCORE      = 5.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, daha keyfiyyətli siqnal
+MIN_SCORE      = 4.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, daha keyfiyyətli siqnal
 
 # EMA
 EMA_FAST, EMA_MID, EMA_SLOW = 9, 21, 50
@@ -89,13 +89,13 @@ ATR_SL        = 1.0     # SL  = giriş - ATR × 1.0
 # ─────────────────────────────────────────────────────────────
 
 # ── Ağırlıqlar (cəmi 10 xal) ─────────────────────────────────
-W_ADX      = 1.0   # Trend gücü (keçid şərti)
+W_ADX      = 0.0   # Trend gücü (keçid şərti)
 W_EMA      = 2.0   # Trend istiqaməti
-W_RSI      = 1.0   # Sadə RSI (overbought/oversold filtri)
+W_RSI      = 1.5   # Sadə RSI (overbought/oversold filtri)
 W_SRSI     = 2.0   # StochRSI momentum keyfiyyəti
 W_MACD     = 1.5   # Momentum istiqaməti
 W_VOL      = 1.0   # Həcm onayı
-W_SQUEEZE  = 1.0   # Squeeze çıxışı
+W_SQUEEZE  = 1.5   # Squeeze çıxışı
 W_MTF      = 0.5   # 4h trend uyğunluğu
 # Cəm: 10.0
 # ─────────────────────────────────────────────────────────────
@@ -320,8 +320,8 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     # ── KEÇID ŞƏRTİ: ADX filtri ──────────────────────────────
     # ADX < 20 → bazarda trend yoxdur, siqnal etibarlı deyil
     # ADX > 50 → həddən artıq uzanma, geri dönüş riski var
-    if not (ADX_MIN <= adx_val <= ADX_MAX):
-        return None
+    # if not (ADX_MIN <= adx_val <= ADX_MAX):
+    #     return None
 
     # ── ALIŞ Skorlaması ───────────────────────────────────────
     buy_score   = 0.0
