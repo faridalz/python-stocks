@@ -49,7 +49,7 @@ from email.mime.text import MIMEText
 
 # ─── PARAMETRLƏR ─────────────────────────────────────────────
 WORKERS        = 20
-MIN_SCORE      = 2.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, daha keyfiyyətli siqnal
+MIN_SCORE      = 5.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, daha keyfiyyətli siqnal
 
 # EMA
 EMA_FAST, EMA_MID, EMA_SLOW = 9, 21, 50
@@ -89,14 +89,14 @@ ATR_SL        = 1.0     # SL  = giriş - ATR × 1.0
 # ─────────────────────────────────────────────────────────────
 
 # ── Ağırlıqlar (cəmi 10 xal) ─────────────────────────────────
-W_ADX      = 0.5   # Trend gücü (keçid şərti)
-W_EMA      = 1.5   # Trend istiqaməti
-W_RSI      = 1.5   # Sadə RSI (overbought/oversold filtri)
-W_SRSI     = 2   # StochRSI momentum keyfiyyəti
+W_ADX      = 1.0   # Trend gücü (keçid şərti)
+W_EMA      = 2.0   # Trend istiqaməti
+W_RSI      = 1.0   # Sadə RSI (overbought/oversold filtri)
+W_SRSI     = 2.0   # StochRSI momentum keyfiyyəti
 W_MACD     = 1.5   # Momentum istiqaməti
-W_VOL      = 1.5   # Həcm onayı
-W_SQUEEZE  = 1.25   # Squeeze çıxışı
-W_MTF      = 0.25   # 4h trend uyğunluğu
+W_VOL      = 1.0   # Həcm onayı
+W_SQUEEZE  = 1.0   # Squeeze çıxışı
+W_MTF      = 0.5   # 4h trend uyğunluğu
 # Cəm: 10.0
 # ─────────────────────────────────────────────────────────────
 
@@ -333,29 +333,26 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         buy_reasons.append(f"ADX↑ {adx_val:.0f} (+DI>{mdi:.0f})")
 
     # 2. EMA düzülüşü (2.0 xal)
-    if e9 < e21 < e50 and price < e50:
+    if e9 > e21 > e50:
         buy_score += W_EMA
         buy_reasons.append("EMA9>21>50↑")
-    elif e9 > e21 and e21 < e50 and price < e50:
+    elif e9 > e21 and price > e50:
         buy_score += W_EMA * 0.5
         buy_reasons.append("EMA qismən↑")
-    elif e9 > e21 > e50 and price > e50:
-        buy_score += W_EMA * 0.25
-        buy_reasons.append("EMA eh↑")
 
     # 3. Sadə RSI (1.0 xal)
     # Alış üçün ideal zona: 40–60 (nə oversold nə overbought — momentum gəlir)
     # RSI < 40: oversold, dönüş mümkün amma təsdiq lazım
-    # RSI 40-50 arası VƏ yüksəlir: ən keyfiyyətli alış zonası
+    # RSI 40-60 arası VƏ yüksəlir: ən keyfiyyətli alış zonası
     # RSI > 70: overbought — alış siqnalına mənfi təsir
-    if 40 <= rsi_val <= 50 and rsi_val > rsi_prev:
-        buy_score += W_RSI * 0.75
-        buy_reasons.append(f"RSI↑ {rsi_val:.0f}")
-    elif 20 <= rsi_val < 40 and rsi_val > rsi_prev:
+    if 40 <= rsi_val <= 60 and rsi_val > rsi_prev:
         buy_score += W_RSI
+        buy_reasons.append(f"RSI↑ {rsi_val:.0f}")
+    elif 30 <= rsi_val < 40 and rsi_val > rsi_prev:
+        buy_score += W_RSI * 0.75
         buy_reasons.append(f"RSI↑ oversold çıxış {rsi_val:.0f}")
     elif rsi_val >= 70:
-        buy_score -= W_RSI * 0.75
+        buy_score -= W_RSI * 0.5
         buy_reasons.append(f"RSI overbought {rsi_val:.0f}⚠️")
 
     # 4. StochRSI (1.5 xal)
@@ -407,10 +404,10 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
         sell_reasons.append(f"ADX↓ {adx_val:.0f} (-DI>{pdi:.0f})")
 
     # 2. EMA
-    if e9 > e21 > e50 and price > e50:
+    if e9 < e21 < e50:
         sell_score += W_EMA
-        sell_reasons.append("EMA9>21>50↓")
-    elif e9 < e21 and e21 > e50 and price > e50:
+        sell_reasons.append("EMA9<21<50↓")
+    elif e9 < e21 and price < e50:
         sell_score += W_EMA * 0.5
         sell_reasons.append("EMA qismən↓")
 
@@ -419,23 +416,14 @@ def analyze(df: pd.DataFrame, trend_4h: int) -> dict | None:
     # RSI > 60: momentum zəifləyir, satış zonası
     # RSI >= 70 VƏ düşür: ən keyfiyyətli satış zonası
     # RSI < 30: oversold — satış siqnalına mənfi təsir
-    if 70 > rsi_val >= 55 and rsi_val < rsi_prev:
-        sell_score += W_RSI * 0.75
-        sell_reasons.append(f"RSI↓ {rsi_val:.0f}")
-    elif rsi_val >= 70 and rsi_val < rsi_prev:
+    if 60 >= rsi_val >= 40 and rsi_val < rsi_prev:
         sell_score += W_RSI
-        sell_reasons.append(f"RSI↓ overbought çıxış {rsi_val:.0f}")
-    elif 55 > rsi_val >= 45 and rsi_val < rsi_prev:
-        sell_score += W_RSI * 0.25
         sell_reasons.append(f"RSI↓ {rsi_val:.0f}")
-    elif 45 > rsi_val >= 40:
-        sell_score -= W_RSI * 0.25
-        sell_reasons.append(f"RSI oversold {rsi_val:.0f}⚠️")
-    elif 40 > rsi_val >= 30:
-        sell_score -= W_RSI * 0.75
-        sell_reasons.append(f"RSI oversold {rsi_val:.0f}⚠️")
-    elif rsi_val < 30:
-        sell_score -= W_RSI * 1
+    elif rsi_val > 60 and rsi_val < rsi_prev:
+        sell_score += W_RSI * 0.75
+        sell_reasons.append(f"RSI↓ overbought çıxış {rsi_val:.0f}")
+    elif rsi_val <= 30:
+        sell_score -= W_RSI * 0.5
         sell_reasons.append(f"RSI oversold {rsi_val:.0f}⚠️")
 
     # 4. StochRSI
