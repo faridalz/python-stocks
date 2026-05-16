@@ -53,7 +53,7 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         if signal:
             dist_pc = ((price - ema_val) / ema_val) * 100
             return {
-                "Tikker": ticker, "Siqnal": signal, "Qiymət": round(price, 3),
+                "Tikker": ticker, "Siqnal": signal, "Qiymət": round(price, 4),
                 "RSI": round(rsi_val, 2), f"EMA({ema_period})": round(ema_val, 2),
                 "Həcm X": round(vol_ratio, 2), "Məsafə %": f"{round(dist_pc, 2)}%"
             }
