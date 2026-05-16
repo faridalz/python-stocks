@@ -33,6 +33,7 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.get_level_values(0)
 
         price = float(df["Close"].iloc[-1])
+        prev_price = float(df["Close"].iloc[-2])
         rsi_val = float(calc_rsi(df["Close"], rsi_period).iloc[-1])
         ema_val = float(calc_ema(df["Close"], ema_period).iloc[-1])
         
@@ -40,10 +41,14 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
         vol_ratio = float(df["Volume"].iloc[-1] / vol_avg) if vol_avg > 0 else 0
 
         signal = None
-        if  price > ema_val and vol_ratio >= vol_mult: #rsi_val < 35 and:
-            signal = "BUĞA (Long)"
-        elif vol_ratio >= vol_mult and price < ema_val: #rsi_val > 75 and
-            signal = "AYI (Short)"
+        if  price > ema_val and vol_ratio >= vol_mult and price > prev_price: #rsi_val < 35 and:
+            signal = "LONG"
+        elif vol_ratio >= vol_mult and price < ema_val and price < prev_price: #rsi_val > 75 and
+            signal = "SHORT"
+        elif vol_ratio >= vol_mult and price > ema_val and price < prev_price: #rsi_val > 75 and
+            signal = "SHORT"    
+        elif vol_ratio >= vol_mult and price < ema_val and price > prev_price: #rsi_val > 75 and
+            signal = "LONG"       
 
         if signal:
             dist_pc = ((price - ema_val) / ema_val) * 100
@@ -79,7 +84,7 @@ def mail_gonder(results_list, interval):
         for item in results_list:
             if not isinstance(item, dict): continue
             
-            sig_color = "#4CAF50" if "BUĞA" in item.get('Siqnal', '') else "#F44336"
+            sig_color = "#4CAF50" if "LONG" in item.get('Siqnal', '') else "#F44336"
 
             # EMA dəyərini dinamik olaraq tapırıq
             ema_key = [k for k in item.keys() if 'EMA' in k]
