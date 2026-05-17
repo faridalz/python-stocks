@@ -118,7 +118,7 @@ def run_scan():
     target_vol = 1.5
     
     targets = [
-        "AAPL","MSFT","NVDA","GOOGL","GOOG","AMZN","META","TSLA","AVGO","ORCL",
+          "AAPL","MSFT","NVDA","GOOGL","GOOG","AMZN","META","TSLA","AVGO","ORCL",
     "CRM","ADBE","AMD","QCOM","TXN","INTC","AMAT","LRCX","KLAC","SNPS",
     "CDNS","MU","MCHP","NXPI","FTNT","PANW","CRWD","NOW","SNOW","PLTR",
     "INTU","ANET","CTSH","AKAM","EPAM","NET","DDOG","ZS","WDAY","APP",
@@ -131,7 +131,7 @@ def run_scan():
     "MPWR","SLAB","SITM","NOVT","FORM","ONTO","MKSI","ACLS","ICHR",
     "SWKS","QRVO","LITE","WOLF","OLED","COHU","UCTT","CRUS","DIOD",
     "MTSI","AMBA","ALGM","POWI","AEHR","ENPH","SEDG","FSLR","RUN",
-    "BE","PLUG","HPQ","HPE","DELL","WDC","STX","NTAP","PSTG","PURE",
+    "BE","PLUG","HPQ","HPE","DELL","WDC","STX","NTAP","PURE",
     "NTNX","SMTC","IMOS","SIMO","DIOD","HIMX","CEVA","MPWR","LSCC",
     "JPM","BAC","WFC","GS","MS","C","BLK","SCHW","AXP","V","MA","COF",
     "USB","PNC","TFC","MTB","CFG","HBAN","KEY","RF","FITB","STT","BK",
@@ -152,7 +152,7 @@ def run_scan():
     "BYND","BROS","CAVA","SHAK","WING","TXRH","DNUT",
     "XOM","CVX","COP","EOG","SLB","OXY","MPC","VLO","PSX","DVN",
     "FANG","APA","HAL","BKR","OKE","WMB","KMI","LNG","EQT","TRGP",
-    "AM","CNX","RRC","AR","MGY","SM","MTDR","CTRA","PR","CHRD",
+    "AM","CNX","RRC","AR","MGY","SM","MTDR","PR","CHRD",
     "HON","GE","RTX","LMT","NOC","GD","BA","TDG","HWM","TXT","AXON",
     "LDOS","CAT","DE","EMR","ETN","ITW","ROK","DOV","PH","AME","ROP",
     "FAST","GWW","MSI","HUBB","GNRC","XYL","NDSN","UPS","FDX","UNP",
@@ -214,6 +214,34 @@ def run_scan():
     "FIL-USD",    # Filecoin
     "OP-USD",     # Optimism
     "ARB-USD",    # Arbitrum
+    "B-USD",
+    "SUI20947-USD",
+    "TON11419-USD",
+    "ME32197-USD",
+    "TRUMP35336-USD",
+    "LTC-USD",
+    "SOL16116-USD",
+    "ONDO-USD",
+    "PROS39682-USD",
+    "LAB33223-USD",
+    "KITE-USD",
+    "ASTER36341-USD",
+    "AIA38430-USD",
+    "SPK36569-USD",
+    "UB38339-USD",
+    "OSMO-USD",
+    "ARB11841-USD",
+    "SAGA30372-USD",
+    "PHB-USD",
+    "STORJ-USD",
+    "CGPT-USD",
+    "SAHARA-USD",
+    "VIRTUAL-USD",
+    "POL28321-USD",
+    "BSB38889-USD",
+        
+        
+        
  
     # --- Tier 3: Large-cap DeFi / Layer 1 ---
     "SUI-USD",    # Sui
@@ -256,6 +284,23 @@ def run_scan():
     "ENA-USD",    # Ethena
     "ETHFI-USD",  # Ether.fi
     "REZ-USD",    # Renzo
+    "4-USD",
+    "SKYAI-USD",
+    "FLOCK-USD",
+    "VANRY-USD",
+    "SXT-USD",
+    "CHZ-USD",
+    "PEPE24478-USD",        
+    "MON30495-USD",
+    "ARKM-USD",
+    "SHIB-USD",
+    "XAUT-USD",
+    "LAYER35429-USD",
+    "AI39883-USD",
+        
+        
+        
+        
  
     # --- Tier 7: Gaming / NFT / metaverse ---
     "BEAM-USD",   # Beam
@@ -263,6 +308,16 @@ def run_scan():
     "YGG-USD",    # Yield Guild Games
     "PYR-USD",    # Vulcan Forged
     "LOOKS-USD",  # LooksRare
+    "HYPE32196-USD",    
+    "USDC-USD",
+    "BILL39545-USD",
+    "OPG-USD",   
+    "UNI7083-USD",
+    "XPL-USD",
+    "ROBO39595-USD",
+    "COMP5692-USD",
+    "STABLE38892-USD",
+    "TRIA-USD",
  
     # --- Tier 8: Layer 2 / rollups ---
     "MANTA-USD",  # Manta Network
@@ -283,6 +338,11 @@ def run_scan():
     "AIOZ-USD",   # AIOZ Network
     "RSS3-USD",   # RSS3
     "NMR-USD",    # Numeraire
+    "IRYS-USD",
+    "SUN-USD",
+    "ORCA-USD",
+        
+        
  
     # --- Tier 10: Classic / legacy alts ---
     "XLM-USD",    # Stellar
