@@ -101,53 +101,245 @@ W_MTF      = 0.5   # 4h trend uyğunluğu
 # ─────────────────────────────────────────────────────────────
 
 STOCK_TICKERS = [
-    "AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AVGO","ORCL","CRM",
-    "ADBE","AMD","QCOM","TXN","INTC","AMAT","LRCX","KLAC","SNPS","CDNS",
-    "MU","MCHP","NXPI","FTNT","PANW","CRWD","NOW","SNOW","PLTR","INTU",
-    "ANET","CTSH","AKAM","EPAM","NET","DDOG","ZS","WDAY","APP","ADSK",
-    "ARM","MRVL","ON","SMCI","TEAM","VRSK","TTD","PYPL","HUBS","MDB",
-    "OKTA","VEEV","GTLB","MNDY","MELI","PDD","SE","SHOP","SQ","COIN",
-    "HOOD","SOFI","UPST","AFRM","DASH","UBER","LYFT","ABNB","BKNG","ROKU",
+        "AAPL","MSFT","NVDA","GOOGL","GOOG","AMZN","META","TSLA","AVGO","ORCL",
+    "CRM","ADBE","AMD","QCOM","TXN","INTC","AMAT","LRCX","KLAC","SNPS",
+    "CDNS","MU","MCHP","NXPI","FTNT","PANW","CRWD","NOW","SNOW","PLTR",
+    "INTU","ANET","CTSH","AKAM","EPAM","NET","DDOG","ZS","WDAY","APP",
+    "ADSK","ARM","ASML","MRVL","ON","SMCI","TEAM","VRSK","TTD","PYPL",
+    "HUBS","MDB","OKTA","VEEV","PCTY","NCNO","BRZE","ASAN","BOX","DBX",
+    "ZM","DOCU","BILL","GTLB","MNDY","NICE","WIX","NTES","JD","BIDU",
+    "MELI","PDD","SE","GRAB","SHOP","COIN","HOOD","SOFI","UPST",
+    "AFRM","OPEN","Z","DASH","UBER","LYFT","ABNB","BKNG",
+    "EXPE","TRIP","VRNS","TENB","QLYS","RDWR","S","SAIL",
+    "MPWR","SLAB","SITM","NOVT","FORM","ONTO","MKSI","ACLS","ICHR",
+    "SWKS","QRVO","LITE","WOLF","OLED","COHU","UCTT","CRUS","DIOD",
+    "MTSI","AMBA","ALGM","POWI","AEHR","ENPH","SEDG","FSLR","RUN",
+    "BE","PLUG","HPQ","HPE","DELL","WDC","STX","NTAP","PURE",
+    "NTNX","SMTC","IMOS","SIMO","DIOD","HIMX","CEVA","MPWR","LSCC",
     "JPM","BAC","WFC","GS","MS","C","BLK","SCHW","AXP","V","MA","COF",
     "USB","PNC","TFC","MTB","CFG","HBAN","KEY","RF","FITB","STT","BK",
     "NTRS","CME","ICE","NDAQ","SPGI","MCO","MSCI","FIS","GPN","AMP",
-    "PRU","MET","AFL","ALL","TRV","PGR","CB","HIG","RJF","ACGL","WRB",
-    "UNH","JNJ","LLY","ABBV","MRK","PFE","TMO","ABT","DHR","BMY","AMGN",
+    "PRU","MET","AFL","ALL","TRV","PGR","CB","HIG","L","RJF","VOYA",
+    "EG","AIZ","ACGL","WRB","RYAN","AON","AJG","BRO","ERIE",
+    "RLI","CINF","THG","HCI","SIGI","KMPR","AFG","FG","MKL",
+    "UNH","JNJ","LLY","MRK","PFE","TMO","ABT","DHR","BMY","AMGN",
     "GILD","REGN","VRTX","ISRG","BSX","MDT","EW","SYK","ZTS","IDXX",
     "DXCM","PODD","ALGN","RVTY","IQV","LH","DGX","CRL","TECH","HSIC",
-    "VTRS","MRNA","BIIB","INCY","ALNY","MOH","CNC","ELV","HUM","CVS","CI",
+    "VTRS","MRNA","BIIB","INCY","ALNY","BMRN","MOH","CNC","ELV","HUM",
+    "CVS","CI","OSCR","TDOC","AMWL","HIMS","DOCS","PHR",
+    "NVCR","KPTI","FATE","RCKT","BEAM","EDIT","NTLA","CRSP","PACB","ILMN",
     "WMT","PG","KO","PEP","COST","MCD","PM","MO","CL","MDLZ","KMB","GIS",
-    "CPB","CAG","HRL","TSN","MKC","CLX","CHD","EL","KR","TGT","DLTR","DG",
-    "ULTA","ROST","TJX","BBY","HD","LOW","ORLY","AZO","TSCO","NKE","LULU",
-    "TPR","RL","SBUX","CMG","YUM","DPZ","QSR",
-    "XOM","CVX","COP","EOG","SLB","OXY","MPC","VLO","PSX","DVN","FANG",
-    "APA","HAL","BKR","OKE","WMB","KMI","LNG","EQT","TRGP","CNX","RRC","AR",
-    "HON","GE","RTX","LMT","NOC","GD","BA","TDG","HWM","AXON","LDOS",
-    "CAT","DE","EMR","ETN","ITW","ROK","DOV","PH","AME","ROP","FAST","GWW",
-    "MSI","HUBB","GNRC","XYL","UPS","FDX","UNP","NSC","CSX","WAB","TT",
-    "CARR","OTIS","JCI","EXPD","JBHT","XPO","ODFL","SAIA",
-    "PLD","AMT","EQIX","CCI","SPG","O","WELL","PSA","EXR","AVB","VICI",
-    "NEE","DUK","SO","AEP","EXC","SRE","ED","PEG","XEL","NRG","VST","CEG",
-    "LIN","APD","ECL","SHW","PPG","NEM","FCX","NUE","STLD","VMC","MLM",
-    "NFLX","DIS","CMCSA","T","VZ","CHTR","TMUS","WBD","FOX","NYT","OMC",
-    "TTWO","EA","RBLX","MTCH","PINS","SNAP","SPOT","LYV",
-    "GM","F","RIVN","LCID","NIO","LI","XPEV","DAL","UAL","LUV","AAL",
-    "MAR","HLT","CCL","RCL","NCLH","DKNG","MGM","WYNN","LVS","CZR",
-    "BRK-B","MMM","ITW","EMR","ROP","AME","SWK","SNA","ADP","PAYX","FICO",
-    "GDDY","MANH","HPQ","HPE","DELL","WDC","STX","NTAP","PSTG","NTNX",
-    "ENPH","SEDG","FSLR","BE","PLUG","MPWR","SWKS","QRVO","LITE",
+    "CPB","CAG","SJM","HRL","TSN","MKC","CLX","CHD","EL","KR","TGT",
+    "DLTR","DG","ULTA","ROST","TJX","BBY","HD","LOW","ORLY","AZO","TSCO",
+    "NKE","LULU","TPR","RL","SBUX","CMG","YUM","DPZ","QSR",
+    "BYND","BROS","CAVA","SHAK","WING","TXRH","DNUT",
+    "XOM","CVX","COP","EOG","SLB","OXY","MPC","VLO","PSX","DVN",
+    "FANG","APA","HAL","BKR","OKE","WMB","KMI","LNG","EQT","TRGP",
+    "AM","CNX","RRC","AR","MGY","SM","MTDR","PR","CHRD",
+    "HON","GE","RTX","LMT","NOC","GD","BA","TDG","HWM","TXT","AXON",
+    "LDOS","CAT","DE","EMR","ETN","ITW","ROK","DOV","PH","AME","ROP",
+    "FAST","GWW","MSI","HUBB","GNRC","XYL","NDSN","UPS","FDX","UNP",
+    "NSC","CSX","WAB","TT","CARR","OTIS","JCI","EXPD","JBHT","XPO",
+    "ODFL","SAIA","RXO","CHRW","GATX","MATX","ARCB","WERN","HTLD",
+    "MRTN","LSTR","HUBG","KFRC","MAN","RHI","KELYA",
+    "PLD","AMT","EQIX","CCI","SPG","O","WELL","PSA","EXR","AVB","EQR",
+    "MAA","UDR","CPT","ESS","ARE","BXP","KIM","REG","FRT","NNN","VICI",
+    "VTR","INVH","WPC","OHI","GLPI","COLD","STAG","EGP","FR","REXR",
+    "NEE","DUK","SO","D","AEP","EXC","SRE","ED","PCG","PEG","XEL","ETR",
+    "ES","FE","PPL","AEE","CMS","DTE","NI","WEC","EVRG","LNT","PNW",
+    "OGE","NRG","VST","CEG","AWK","MSEX","YORW","ARTNA","GWRS",
+    "LIN","APD","ECL","SHW","PPG","NEM","FCX","NUE","RS","VMC",
+    "MLM","ALB","CE","EMN","RPM","FMC","MOS","CF","DOW","LYB","WLK",
+    "OLN","CC","AXTA","AVNT","HUN","TREX","IBP","BLDR","EXP","BCC","ATI",
+    "NFLX","DIS","CMCSA","T","VZ","CHTR","TMUS","WBD","FOX","FOXA",
+    "NWSA","NWS","NYT","OMC","TTWO","EA","RBLX","MTCH","PINS","SNAP",
+    "SPOT","LYV","TTD","MGNI","PUBM","APPS","DV","NCMI","AMC","ROKU",
+    "FUBO","SIRI","FWONA","FWONK","WMG","SPHR",
+    "MAR","HLT","H","IHG","CCL","RCL","NCLH","DAL","UAL","LUV","AAL",
+    "ALK","JBLU","URI","GM","F","RIVN","LCID","NIO","LI","XPEV",
+    "DKNG","MGM","WYNN","LVS","CZR","PENN","CHDN","CNK","IMAX","AMC",
+    "BRK-B","MMM","ITW","EMR","DOV","ROP","AME","FTV","SWK","SNA",
+    "LECO","GTLS","ADP","PAYC","PAYX","PCTY","WEX","FLYW","PAYO",
+    "FICO","GDDY","GEN","VRSN","MANH","EPAM","GLOB","PAGS",
+    "STNE","TOST","PAX","RELY","FLNC","JOBY","ACHR",
+
+    # --- LONDON (.L) ---
+    "AZN.L","GSK.L","BP.L","SHEL.L","HSBA.L","BARC.L","LLOY.L","VOD.L","RR.L",
+    "NG.L","BATS.L","IMB.L","ULVR.L","DGE.L","RIO.L","GLEN.L","AAL.L","REL.L",
+    "SGE.L","BA.L","IAG.L","SSE.L","AV.L",
+
+    # --- ALMANİYA (.DE) ---
+    "SAP.DE","DTE.DE","BAS.DE","BAYN.DE","ALV.DE","MUV2.DE","VOW3.DE","ADS.DE",
+    "DBK.DE","CBK.DE","RWE.DE","EOAN.DE","IFX.DE","HEI.DE","HEN3.DE","BMW.DE",
+    "PAH3.DE","DTG.DE","BEI.DE","ZAL.DE","CON.DE","SY1.DE","FRE.DE",
+
+    # --- FRANSA və NİDERLAND ---
+    "MC.PA","OR.PA","RMS.PA","KER.PA","AIR.PA","TTE.PA","SAN.PA","BNP.PA",
+    "ASML.AS","ADYEN.AS","INGA.AS","PRX.AS"
 ]
 
 CRYPTO_TICKERS = [
-    "BTC-USD","ETH-USD","BNB-USD","SOL-USD","XRP-USD","DOGE-USD","ADA-USD",
-    "AVAX-USD","LINK-USD","DOT-USD","MATIC-USD","UNI-USD","LTC-USD","BCH-USD",
-    "ATOM-USD","XLM-USD","ALGO-USD","VET-USD","ICP-USD","FIL-USD","NEAR-USD",
-    "APT-USD","ARB-USD","OP-USD","INJ-USD","SUI-USD","SEI-USD","TIA-USD",
-    "RNDR-USD","FET-USD","GRT-USD","SAND-USD","MANA-USD","AXS-USD","ENJ-USD",
-    "CRV-USD","AAVE-USD","MKR-USD","COMP-USD","SNX-USD","LDO-USD","RPL-USD",
-    "IMX-USD","BLUR-USD","DYDX-USD","PEPE-USD","SHIB-USD","FLOKI-USD",
-    "WIF-USD","BONK-USD","JTO-USD","PYTH-USD","JUP-USD","STRK-USD","MANTA-USD",
-    "ENA-USD","W-USD","ORDI-USD","SATS-USD","STX-USD","THETA-USD","EGLD-USD",
+
+     # --- Tier 1: Mega liquidity ---
+    "BTC-USD",    # Bitcoin
+    "ETH-USD",    # Ethereum
+    "BNB-USD",    # BNB
+    "SOL-USD",    # Solana
+    "XRP-USD",    # XRP
+    "DOGE-USD",   # Dogecoin
+    "ADA-USD",    # Cardano
+    "AVAX-USD",   # Avalanche
+    "LINK-USD",   # Chainlink
+    "DOT-USD",    # Polkadot
+ 
+    # --- Tier 2: High volume alts ---
+    "LTC-USD",    # Litecoin
+    "BCH-USD",    # Bitcoin Cash
+    "ATOM-USD",   # Cosmos
+    "ETC-USD",    # Ethereum Classic
+    "FIL-USD",    # Filecoin
+    "OP-USD",     # Optimism
+    "ARB-USD",    # Arbitrum
+    "B-USD",
+    "SUI20947-USD",
+    "TON11419-USD",
+    "ME32197-USD",
+    "TRUMP35336-USD",
+    "LTC-USD",
+    "SOL16116-USD",
+    "ONDO-USD",
+    "PROS39682-USD",
+    "LAB33223-USD",
+    "KITE-USD",
+    "ASTER36341-USD",
+    "AIA38430-USD",
+    "SPK36569-USD",
+    "UB38339-USD",
+    "OSMO-USD",
+    "ARB11841-USD",
+    "SAGA30372-USD",
+    "PHB-USD",
+    "STORJ-USD",
+    "CGPT-USD",
+    "SAHARA-USD",
+    "VIRTUAL-USD",
+    "POL28321-USD",
+    "BSB38889-USD",
+        
+        
+        
+ 
+    # --- Tier 3: Large-cap DeFi / Layer 1 ---
+    "SUI-USD",    # Sui
+    "SEI-USD",    # Sei
+    "TIA-USD",    # Celestia
+    "INJ-USD",    # Injective
+    "NEAR-USD",   # NEAR Protocol
+    "ALGO-USD",   # Algorand
+    "HBAR-USD",   # Hedera
+    "VET-USD",    # VeChain
+    "ICP-USD",    # Internet Computer
+ 
+    # --- Tier 4: Mid-cap high volume ---
+    "RUNE-USD",   # THORChain
+    "SAND-USD",   # The Sandbox
+    "MANA-USD",   # Decentraland
+    "AXS-USD",    # Axie Infinity
+    "GALA-USD",   # Gala
+    "CRV-USD",    # Curve DAO
+    "AAVE-USD",   # Aave
+    "MKR-USD",    # Maker
+    "SNX-USD",    # Synthetix
+ 
+    # --- Tier 5: Trending / meme / narrative ---
+    "WIF-USD",    # Dogwifhat
+    "BONK-USD",   # Bonk
+    "FLOKI-USD",  # Floki
+    "SHIB-USD",   # Shiba Inu
+    "ORDI-USD",   # Ordinals
+    "CFX-USD",    # Conflux
+ 
+    # --- Tier 6: Infrastructure / interop ---
+    "LDO-USD",    # Lido DAO
+    "PENDLE-USD", # Pendle
+    "JTO-USD",    # Jito
+    "PYTH-USD",   # Pyth Network
+    "JUP-USD",    # Jupiter
+    "WEN-USD",    # Wen
+    "W-USD",      # Wormhole
+    "ENA-USD",    # Ethena
+    "ETHFI-USD",  # Ether.fi
+    "REZ-USD",    # Renzo
+    "4-USD",
+    "SKYAI-USD",
+    "FLOCK-USD",
+    "VANRY-USD",
+    "SXT-USD",
+    "CHZ-USD",
+    "PEPE24478-USD",        
+    "MON30495-USD",
+    "ARKM-USD",
+    "SHIB-USD",
+    "XAUT-USD",
+    "LAYER35429-USD",
+    "AI39883-USD",
+        
+        
+        
+        
+ 
+    # --- Tier 7: Gaming / NFT / metaverse ---
+    "BEAM-USD",   # Beam
+    "MAVIA-USD",  # Heroes of Mavia
+    "YGG-USD",    # Yield Guild Games
+    "PYR-USD",    # Vulcan Forged
+    "LOOKS-USD",  # LooksRare
+    "HYPE32196-USD",    
+    "USDC-USD",
+    "BILL39545-USD",
+    "OPG-USD",   
+    "UNI7083-USD",
+    "XPL-USD",
+    "ROBO39595-USD",
+    "COMP5692-USD",
+    "STABLE38892-USD",
+    "TRIA-USD",
+ 
+    # --- Tier 8: Layer 2 / rollups ---
+    "MANTA-USD",  # Manta Network
+    "ZETA-USD",   # ZetaChain
+    "STRK-USD",   # Starknet
+    "TAIKO-USD",  # Taiko
+    "MODE-USD",   # Mode Network
+    "METIS-USD",  # Metis
+ 
+    # --- Tier 9: AI / data / compute ---
+    "FET-USD",    # Fetch.ai
+    "AGIX-USD",   # SingularityNET
+    "OCEAN-USD",  # Ocean Protocol
+    "RENDER-USD",   # Render
+    "WLD-USD",    # Worldcoin
+    "TAO22974-USD",    # Bittensor
+    "ATH30083-USD",    # Aethir
+    "AIOZ-USD",   # AIOZ Network
+    "RSS3-USD",   # RSS3
+    "NMR-USD",    # Numeraire
+    "IRYS-USD",
+    "SUN-USD",
+    "ORCA-USD",
+        
+        
+ 
+    # --- Tier 10: Classic / legacy alts ---
+    "XLM-USD",    # Stellar
+    "TRX-USD",    # TRON
+    "EOS-USD",    # EOS
+    "XMR-USD",    # Monero
+    "ZEC-USD",    # Zcash
+    "DASH-USD",   # Dash
+    "XTZ-USD",    # Tezos
+    "ICX-USD",    # ICON
+    "ONT-USD",    # Ontology    
 ]
 
 DELISTED = {
