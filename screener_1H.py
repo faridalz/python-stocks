@@ -49,7 +49,7 @@ from email.mime.text import MIMEText
 
 # ─── PARAMETRLƏR ─────────────────────────────────────────────
 WORKERS        = 20
-MIN_SCORE      = 4.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, daha keyfiyyətli siqnal
+MIN_SCORE      = 5.0    # Minimum xal (0-10 arası); yüksəldilsə daha az, daha keyfiyyətli siqnal
 
 # EMA
 EMA_FAST, EMA_MID, EMA_SLOW = 9, 21, 50
