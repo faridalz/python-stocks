@@ -34,6 +34,7 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
 
         price = float(df["Close"].iloc[-1])
         prev_price = float(df["Close"].iloc[-2])
+        prev_open_price = float(df["Open"].iloc[-2])
         rsi_val = float(calc_rsi(df["Close"], rsi_period).iloc[-1])
         ema_val = float(calc_ema(df["Close"], ema_period).iloc[-1])
         
@@ -45,9 +46,9 @@ def check_symbol(ticker, interval, rsi_period, ema_period, vol_mult):
             signal = "LONG"
         elif vol_ratio >= vol_mult and price < ema_val and price < prev_price: #rsi_val > 75 and
             signal = "SHORT"
-        elif vol_ratio >= vol_mult and price > ema_val and price < prev_price: #rsi_val > 75 and
+        elif vol_ratio >= vol_mult and price > ema_val and price < prev_open_price: #rsi_val > 75 and
             signal = "SHORT"    
-        elif vol_ratio >= vol_mult and price < ema_val and price > prev_price: #rsi_val > 75 and
+        elif vol_ratio >= vol_mult and price < ema_val and price > prev_open_price: #rsi_val > 75 and
             signal = "LONG"       
 
         if signal:
