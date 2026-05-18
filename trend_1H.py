@@ -311,7 +311,6 @@ def run_scan():
     "BEAM-USD",   # Beam
     "MAVIA-USD",  # Heroes of Mavia
     "YGG-USD",    # Yield Guild Games
-    "PYR-USD",    # Vulcan Forged
     "LOOKS-USD",  # LooksRare
     "HYPE32196-USD",    
     "USDC-USD",
@@ -352,7 +351,6 @@ def run_scan():
     # --- Tier 10: Classic / legacy alts ---
     "XLM-USD",    # Stellar
     "TRX-USD",    # TRON
-    "EOS-USD",    # EOS
     "XMR-USD",    # Monero
     "ZEC-USD",    # Zcash
     "DASH-USD",   # Dash
