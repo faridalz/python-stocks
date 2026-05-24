@@ -4,7 +4,7 @@ on:
   schedule:
     # Hər saat başı işə düşür (UTC ilə)
     # Bazar ertəsi–Cümə, saat 13:00–21:00 UTC = New York 09:00–17:00
-    - cron: "0 8,10,12,14,16,18 * * *"
+    - cron: "0 15 * * *"
   # Əl ilə də işə salmaq üçün
   workflow_dispatch:
 
