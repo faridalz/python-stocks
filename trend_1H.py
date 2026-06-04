@@ -308,7 +308,7 @@ def run_scan():
         # --- Tier 2: High volume alts ---
         "LTC-USD","BCH-USD","ATOM-USD","ETC-USD","FIL-USD","OP-USD","ARB-USD",
         "B-USD","SUI20947-USD","TON11419-USD","ME32197-USD","TRUMP35336-USD",
-        "SOL16116-USD","ONDO-USD","PROS39682-USD","LAB33223-USD","KITE-USD",
+        "SOL16116-USD","ONDO-USD","LAB33223-USD","KITE-USD",
         "ASTER36341-USD","AIA38430-USD","SPK36569-USD","UB38339-USD","OSMO-USD",
         "ARB11841-USD","SAGA30372-USD","PHB-USD","STORJ-USD","CGPT-USD",
         "SAHARA-USD","VIRTUAL-USD","POL28321-USD","BSB38889-USD",
@@ -336,7 +336,7 @@ def run_scan():
         "ROBO39595-USD","COMP5692-USD","STABLE38892-USD","TRIA-USD",
 
         # --- Tier 8: Layer 2 / rollups ---
-        "MANTA-USD","ZETA-USD","STRK-USD","TAIKO-USD","MODE-USD","METIS-USD",
+        "MANTA-USD","ZETA-USD","STRK-USD","TAIKO-USD","METIS-USD",
 
         # --- Tier 9: AI / data / compute ---
         "FET-USD","AGIX-USD","OCEAN-USD","RENDER-USD","WLD-USD",
