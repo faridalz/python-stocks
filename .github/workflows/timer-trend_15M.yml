@@ -1,4 +1,4 @@
-name: Trend 1H
+name: Trend 15M
 
 on:
   schedule:
