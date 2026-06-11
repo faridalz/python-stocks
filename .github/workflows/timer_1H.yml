@@ -1,9 +1,9 @@
 name: Skaner 1H
 
 on:
-  schedule:
-    # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
-    - cron: '0 15 * * *'
+  # schedule:
+  #   # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
+  #   - cron: '0 15 * * *'
   # Bu hissə sənə GitHub-da düyməyə basaraq skripti istədiyin vaxt işlətməyə icazə verir.
   workflow_dispatch:
 
