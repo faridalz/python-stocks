@@ -1,9 +1,9 @@
 name: Trend 15M
 
 on:
-  schedule:
-    # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
-    - cron: '0 12,14,16,18 * * *'
+  # schedule:
+  #   # Bu hissə "Cron" formatıdır. '0 * * * *' hər saatın tamamı deməkdir.
+  #   - cron: '0 12,14,16,18 * * *'
   # Bu hissə sənə GitHub-da düyməyə basaraq skripti istədiyin vaxt işlətməyə icazə verir.
   workflow_dispatch:
 
